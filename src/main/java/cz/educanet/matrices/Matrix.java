@@ -1,5 +1,7 @@
 package cz.educanet.matrices;
 
+import java.util.Arrays;
+
 public class Matrix implements IMatrix {
 
     private final double[][] rawArray;
@@ -13,15 +15,32 @@ public class Matrix implements IMatrix {
      */
     @Override
     public IMatrix times(IMatrix matrix) {
-        return null;
+        Matrix first = new Matrix(rawArray);
+        Matrix second = (Matrix) matrix;
+        double[][] result = new double[first.getRows()][second.getColumns()];
+        if (first.getColumns() != second.getRows())
+            throw new IllegalArgumentException();
+// https://www.javatpoint.com/java-program-to-multiply-two-matrices#:~:text=We%20can%20multiply%20two%20matrices,add%2C%20subtract%20and%20multiply%20matrices.
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result[i].length; j++) {
+                for (int k = 0; k < first.getRows(); k++) {
+                    result [i][j] += (first.get(i, k) * second.get(k, j));
+                }
+            }
+        }
+        return new Matrix(result);
     }
 
-    /**
-     * TODO: Implement
-     */
     @Override
     public IMatrix times(Number scalar) {
-        return null;
+        double[][] a = rawArray;
+        int b = (int) scalar;
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length; j++) {
+                a[i][j] *= b;
+            }
+        }
+        return new Matrix(a);
     }
 
     /**
@@ -29,7 +48,14 @@ public class Matrix implements IMatrix {
      */
     @Override
     public IMatrix add(IMatrix matrix) {
-        return null;
+
+        double[][] addMatrix = rawArray;
+        for (int i = 0; i < addMatrix.length; i++)
+            for (int j = 0; j < addMatrix.length; j++)
+                addMatrix[i][j] += matrix.get(i, j);
+        return new Matrix(addMatrix);
+
+
     }
 
     /**
@@ -37,12 +63,15 @@ public class Matrix implements IMatrix {
      */
     @Override
     public IMatrix transpose() {
-        return null;
+        double[][] transpose = new double[this.getColumns()][this.getRows()];
+        for (int i = 0; i < this.getRows(); i++) {
+            for (int j = 0; j < this.getColumns(); j++) {
+                transpose[j][i] = this.rawArray[i][j];
+            }
+        }
+        return MatrixFactory.instance.create(transpose);
     }
 
-    /**
-     * TODO: Implement
-     */
     @Override
     public double determinant() {
         return 0;
@@ -53,24 +82,31 @@ public class Matrix implements IMatrix {
      */
     @Override
     public boolean isSquare() {
-        return false;
+        return rawArray.length == rawArray[0].length;
     }
 
-    /**
-     * TODO: Implement
-     */
     @Override
     public boolean isDiagonal() {
-        return false;
+        if (!this.isSquare()) return false;
+        double[][] matrixDiagonal = new double[rawArray.length][rawArray[0].length];
+        for (int i = 0; i < rawArray.length; i++)
+            matrixDiagonal[i][i] = rawArray[i][i];
+        return Arrays.deepEquals(matrixDiagonal, rawArray);
     }
 
-    /**
-     * TODO: Implement
-     */
     @Override
     public Number getTrace() {
-        return null;
+        if (!this.isSquare()) {
+            throw new UnsupportedOperationException();
+        }
+        double trace = 0;
+        for (int i = 0; i < this.getRows(); i++) {
+            trace += this.rawArray[i][i];
+        }
+
+        return trace;
     }
+
 
     @Override
     public int getRows() {
