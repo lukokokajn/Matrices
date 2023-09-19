@@ -15,32 +15,30 @@ public class Matrix implements IMatrix {
      */
     @Override
     public IMatrix times(IMatrix matrix) {
-        Matrix first = new Matrix(rawArray);
-        Matrix second = (Matrix) matrix;
-        double[][] result = new double[first.getRows()][second.getColumns()];
-        if (first.getColumns() != second.getRows())
+        if (getColumns() != matrix.getRows())
             throw new IllegalArgumentException();
-// https://www.javatpoint.com/java-program-to-multiply-two-matrices#:~:text=We%20can%20multiply%20two%20matrices,add%2C%20subtract%20and%20multiply%20matrices.
+
+        double[][] result = new double[getRows()][matrix.getColumns()];
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result[i].length; j++) {
-                for (int k = 0; k < first.getRows(); k++) {
-                    result [i][j] += (first.get(i, k) * second.get(k, j));
+                for (int k = 0; k < matrix.getRows(); k++) {
+                    result[i][j] += (get(i, k) * matrix.get(k, j));
                 }
             }
         }
+
         return new Matrix(result);
     }
 
     @Override
     public IMatrix times(Number scalar) {
-        double[][] a = rawArray;
-        int b = (int) scalar;
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a.length; j++) {
-                a[i][j] *= b;
+        double[][] result = new double[getRows()][getColumns()];
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result[i].length; j++) {
+                result[i][j] = scalar.doubleValue() * rawArray[i][j];
             }
         }
-        return new Matrix(a);
+        return new Matrix(result);
     }
 
     /**
@@ -49,13 +47,13 @@ public class Matrix implements IMatrix {
     @Override
     public IMatrix add(IMatrix matrix) {
 
-        double[][] addMatrix = rawArray;
-        for (int i = 0; i < addMatrix.length; i++)
-            for (int j = 0; j < addMatrix.length; j++)
-                addMatrix[i][j] += matrix.get(i, j);
-        return new Matrix(addMatrix);
-
-
+        double[][] sumResult = new double[getRows()][getColumns()];
+        for (int i = 0; i < rawArray.length; i++) {
+            for (int j = 0; j < rawArray[i].length; j++) {
+                sumResult[i][j] = rawArray[i][j] + matrix.get(i, j);
+            }
+        }
+        return new Matrix(sumResult);
     }
 
     /**
